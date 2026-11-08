@@ -42,3 +42,5 @@ words are dropped.
 ```bash
 python -m unittest -v
 ```
+## AI
+Please note that the development of this project was assisted by Artificial Intelligence (AI) tools, which were utilized to support code structuring, design implementation, and documentation refinement.

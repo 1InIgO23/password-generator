@@ -53,15 +53,15 @@ def _character_classes(opts: Options) -> list[str]:
 def _validate(opts: Options) -> list[str]:
     classes = _character_classes(opts)
     if not classes:
-        raise ValueError("Hay que seleccionar al menos un juego de caracteres.")
+        raise ValueError("Select at least one character set.")
     if not MIN_LENGTH <= opts.length <= MAX_LENGTH:
         raise ValueError(
-            f"La longitud debe estar entre {MIN_LENGTH} y {MAX_LENGTH}."
+            f"Length must be between {MIN_LENGTH} and {MAX_LENGTH}."
         )
     if opts.length < len(classes):
         raise ValueError(
-            f"La longitud ({opts.length}) no puede ser menor que el número "
-            f"de juegos de caracteres seleccionados ({len(classes)})."
+            f"Length ({opts.length}) cannot be less than the number "
+            f"of selected character sets ({len(classes)})."
         )
     return classes
 

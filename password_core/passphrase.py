@@ -47,11 +47,11 @@ def load_wordlist() -> tuple[str, ...]:
 
 def _validate(opts: PassphraseOptions, wordlist: tuple[str, ...]) -> None:
     if not MIN_WORDS <= opts.words <= MAX_WORDS:
-        raise ValueError(f"El número de palabras debe estar entre {MIN_WORDS} y {MAX_WORDS}.")
+        raise ValueError(f"Number of words must be between {MIN_WORDS} and {MAX_WORDS}.")
     if len(wordlist) < 2:
-        raise ValueError("La lista de palabras está vacía o es demasiado corta.")
+        raise ValueError("The wordlist is empty or too short.")
     if any(c.isalpha() for c in opts.separator):
-        raise ValueError("El separador no puede contener letras.")
+        raise ValueError("The separator cannot contain letters.")
 
 
 def generate_passphrase(

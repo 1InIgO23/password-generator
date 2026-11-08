@@ -31,6 +31,18 @@ Electronic Frontier Foundation, licensed under
 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/). The 4 hyphenated
 words are dropped.
 
+## Command line
+
+```bash
+python -m password_core password --length 20 --symbols
+python -m password_core passphrase --words 5 --capitalize --number
+python -m password_core password --count 3 --entropy
+python -m password_core passphrase --help
+```
+
+Results are written to stdout; the `--entropy` line goes to stderr, so
+`python -m password_core password > out.txt` saves only the passwords.
+
 ## Security decisions
 
 - Randomness comes from `secrets`, which uses the operating system's CSPRNG.

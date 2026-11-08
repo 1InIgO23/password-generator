@@ -1,19 +1,21 @@
 # Python
 __pycache__/
 *.py[cod]
-.venv/
-venv/
 
-# Empaquetado (cuando usemos PyInstaller)
+# Virtual environments (.venv, .venv-1, venv, ...)
+.venv*/
+venv*/
+
+# Packaging (PyInstaller)
 build/
 dist/
 *.spec
 
-# Editores y sistema
+# Editors and OS files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 
-# Pruebas locales
+# Local experiments
 prueba.py

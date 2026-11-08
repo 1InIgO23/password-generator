@@ -61,9 +61,10 @@ class GenerateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             generate_password(Options(length=MAX_LENGTH + 1))
 
+
 class PoolAndEntropyTests(unittest.TestCase):
     def test_pool_size_default(self):
-        # mayúsculas + minúsculas + dígitos
+        # uppercase + lowercase + digits
         self.assertEqual(pool_size(Options()), 62)
 
     def test_pool_size_with_symbols(self):

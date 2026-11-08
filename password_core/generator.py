@@ -1,7 +1,7 @@
-"""Generación de contraseñas aleatorias usando el CSPRNG del sistema.
+"""Random password generation using the operating system's CSPRNG.
 
-Toda la aleatoriedad proviene de `secrets` (os.urandom por debajo).
-No usar `random` para nada de lo que aquí se genera.
+All randomness comes from `secrets` (backed by os.urandom).
+Never use `random` for anything generated here.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ LOWER = string.ascii_lowercase
 DIGITS = string.digits
 SYMBOLS = "!@#$%^&*()-_=+[]{};:,.<>?"
 
-# Caracteres que se confunden fácilmente al leerlos o escribirlos.
+# Characters that are easily confused when reading or typing.
 AMBIGUOUS = frozenset("0O1lI")
 
 
@@ -33,7 +33,7 @@ class Options:
 
 
 def _character_classes(opts: Options) -> list[str]:
-    """Devuelve una cadena por cada clase de caracteres activa."""
+    """Return one string per enabled character class."""
     selected = []
     if opts.upper:
         selected.append(UPPER)
@@ -67,23 +67,23 @@ def _validate(opts: Options) -> list[str]:
 
 
 def pool_size(opts: Options) -> int:
-    """Número de caracteres distintos entre los que se puede elegir."""
+    """Number of distinct characters that can be picked from."""
     return sum(len(cls) for cls in _character_classes(opts))
 
 
 def generate_password(opts: Options = Options()) -> str:
-    """Genera una contraseña que cumple las opciones indicadas.
+    """Generate a password that satisfies the given options.
 
-    Garantiza al menos un carácter de cada clase seleccionada.
+    Guarantees at least one character from each selected class.
     """
     classes = _validate(opts)
     pool = "".join(classes)
 
-    # Un carácter de cada clase activa, para cumplir la garantía...
+    # One character from each enabled class, to meet the guarantee...
     chars = [secrets.choice(cls) for cls in classes]
-    # ...y el resto sale del conjunto completo.
+    # ...and the rest come from the full pool.
     chars += [secrets.choice(pool) for _ in range(opts.length - len(chars))]
 
-    # Mezclar para que las posiciones obligatorias no sean predecibles.
+    # Shuffle so the guaranteed positions are not predictable.
     secrets.SystemRandom().shuffle(chars)
     return "".join(chars)

@@ -1,12 +1,12 @@
-"""Generación de frases de paso (estilo diceware).
+"""Passphrase generation (diceware style).
 
-Una frase de paso es una secuencia de palabras elegidas al azar de una
-lista grande, por ejemplo: "lantern-oxidize-crumb-velvet-sprout-ample".
-Es más fácil de recordar y teclear que "Z0rVJutPiBDC3FEN" y, con
-suficientes palabras, igual de segura.
+A passphrase is a sequence of words chosen at random from a large list,
+for example: "lantern-oxidize-crumb-velvet-sprout-ample".
+It is easier to remember and type than "Z0rVJutPiBDC3FEN" and, with
+enough words, just as secure.
 
-La lista por defecto es la "EFF Large Wordlist" (Electronic Frontier
-Foundation, licencia CC BY 3.0): https://www.eff.org/dice
+The default list is the EFF Large Wordlist (Electronic Frontier
+Foundation, CC BY 3.0 license): https://www.eff.org/dice
 """
 
 from __future__ import annotations
@@ -25,16 +25,16 @@ MAX_WORDS = 20
 class PassphraseOptions:
     words: int = 6
     separator: str = "-"
-    capitalize: bool = False   # "Lantern-Oxidize-..." en lugar de "lantern-oxidize-..."
-    add_number: bool = False   # añade un dígito al final de una palabra al azar
+    capitalize: bool = False   # "Lantern-Oxidize-..." instead of "lantern-oxidize-..."
+    add_number: bool = False   # append one digit to the end of a random word
 
 
 @lru_cache(maxsize=1)
 def load_wordlist() -> tuple[str, ...]:
-    """Carga la lista de palabras incluida en el paquete.
+    """Load the wordlist bundled with the package.
 
-    Se cachea: el archivo se lee una sola vez aunque se generen muchas frases.
-    Se descartan palabras con guion para que no se confundan con el separador.
+    Cached: the file is read only once, however many phrases are generated.
+    Hyphenated words are dropped so they can't be confused with the separator.
     """
     text = (
         resources.files("password_core")
@@ -58,7 +58,7 @@ def generate_passphrase(
     opts: PassphraseOptions = PassphraseOptions(),
     wordlist: tuple[str, ...] | None = None,
 ) -> str:
-    """Genera una frase de paso según las opciones indicadas."""
+    """Generate a passphrase according to the given options."""
     wordlist = wordlist if wordlist is not None else load_wordlist()
     _validate(opts, wordlist)
 
@@ -78,11 +78,12 @@ def passphrase_entropy_bits(
     opts: PassphraseOptions = PassphraseOptions(),
     wordlist: tuple[str, ...] | None = None,
 ) -> float:
-    """Entropía en bits de una frase generada con estas opciones.
+    """Entropy in bits of a phrase generated with these options.
 
-    Cada palabra aporta log2(tamaño de la lista) bits.
-    El número opcional aporta log2(10) por el dígito + log2(palabras) por su posición.
-    Mayúsculas y separador no aportan nada: siempre son iguales, el atacante los conoce.
+    Each word contributes log2(wordlist size) bits.
+    The optional number adds log2(10) for the digit + log2(words) for its position.
+    Capitalization and separator add nothing: they are always the same,
+    so an attacker already knows them.
     """
     wordlist = wordlist if wordlist is not None else load_wordlist()
     bits = opts.words * math.log2(len(wordlist))

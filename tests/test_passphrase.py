@@ -14,7 +14,7 @@ class WordlistTests(unittest.TestCase):
     def test_wordlist_is_large_and_clean(self):
         words = load_wordlist()
         self.assertGreater(len(words), 7000)
-        self.assertEqual(len(words), len(set(words)))       # sin duplicados
+        self.assertEqual(len(words), len(set(words)))       # no duplicates
         self.assertTrue(all(w.isalpha() and w.islower() for w in words))
 
 

@@ -1,4 +1,4 @@
-"""Núcleo de generación de contraseñas. Sin dependencias de interfaz."""
+"""Password generation core. No UI dependencies."""
 
 from .generator import (
     MAX_LENGTH,

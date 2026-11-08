@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Empaquetado (cuando usemos PyInstaller)
+build/
+dist/
+*.spec
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Pruebas locales
+prueba.py

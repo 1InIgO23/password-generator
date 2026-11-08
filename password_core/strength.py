@@ -20,9 +20,9 @@ def entropy_bits(length: int, pool: int) -> float:
 def strength_label(bits: float) -> str:
     """Human-readable label based on entropy in bits."""
     if bits < 40:
-        return "Débil"
+        return "Weak"
     if bits < 60:
-        return "Razonable"
+        return "Fair"
     if bits < 80:
-        return "Fuerte"
-    return "Muy segura"
+        return "Strong"
+    return "Very strong"

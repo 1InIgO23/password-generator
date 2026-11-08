@@ -81,10 +81,10 @@ class PoolAndEntropyTests(unittest.TestCase):
         self.assertEqual(entropy_bits(16, 1), 0.0)
 
     def test_strength_labels(self):
-        self.assertEqual(strength_label(10), "Débil")
-        self.assertEqual(strength_label(50), "Razonable")
-        self.assertEqual(strength_label(70), "Fuerte")
-        self.assertEqual(strength_label(100), "Muy segura")
+        self.assertEqual(strength_label(10), "Weak")
+        self.assertEqual(strength_label(50), "Fair")
+        self.assertEqual(strength_label(70), "Strong")
+        self.assertEqual(strength_label(100), "Very strong")
 
 
 if __name__ == "__main__":

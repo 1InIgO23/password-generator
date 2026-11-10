@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QApplication
 BACKGROUND = "#202020"     # window background
 SURFACE = "#2b2b2b"        # cards and input fields
 SURFACE_HOVER = "#323232"
+SEGMENT_SELECTED = "#3d3d3d"  # selected segment in the mode selector
 BORDER = "#3a3a3a"
 TEXT = "#ffffff"
 TEXT_SECONDARY = "#c5c5c5"
@@ -73,6 +74,27 @@ QPushButton#accent {{
 }}
 QPushButton#accent:hover {{
     background-color: {ACCENT_HOVER};
+}}
+
+QFrame#segmented {{
+    background-color: {SURFACE};
+    border: 1px solid {BORDER};
+    border-radius: 7px;
+}}
+QPushButton#segment {{
+    background-color: transparent;
+    color: {TEXT_SECONDARY};
+    border: none;
+    border-radius: 5px;
+    padding: 5px 16px;
+}}
+QPushButton#segment:hover {{
+    color: {TEXT};
+}}
+QPushButton#segment:checked {{
+    background-color: {SEGMENT_SELECTED};
+    color: {TEXT};
+    font-weight: 600;
 }}
 
 QSlider::groove:horizontal {{

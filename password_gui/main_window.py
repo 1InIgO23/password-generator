@@ -1,5 +1,5 @@
 """Main window: password display, length slider, character set checkboxes
-and a copy-to-clipboard button.
+and a copy-to-clipboard button that clears the clipboard after a delay.
 
 The window only reads the controls, builds an Options object and asks
 password_core for a password. It does not generate anything itself.
@@ -8,7 +8,7 @@ password_core for a password. It does not generate anything itself.
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (
     QCheckBox,
     QFrame,
@@ -23,19 +23,24 @@ from PySide6.QtWidgets import (
 
 from password_core import Options, entropy_bits, generate_password, pool_size, strength_label
 
+from .clipboard import ClipboardGuard
 from .theme import STRENGTH_COLORS, mono_font
 
 SLIDER_MIN = 4
 SLIDER_MAX = 64
 DEFAULT_LENGTH = 16
 COPIED_FEEDBACK_MS = 1500
+CLIPBOARD_CLEAR_SECONDS = 20
+CLEARED_MESSAGE_MS = 2500
 
 
 class MainWindow(QWidget):
-    def __init__(self) -> None:
+    def __init__(self, clipboard_timeout_s: int = CLIPBOARD_CLEAR_SECONDS) -> None:
         super().__init__()
         self.setWindowTitle("Password Generator")
         self.setMinimumWidth(520)
+
+        self.clipboard_guard = ClipboardGuard(clipboard_timeout_s, parent=self)
 
         self._build_ui()
         self._connect_signals()
@@ -63,6 +68,13 @@ class MainWindow(QWidget):
 
         self.copy_button = QPushButton("Copy", objectName="accent")
         self.copy_button.setMinimumHeight(40)
+
+        # Small status line under the button: "Clipboard clears in 20 s".
+        # It always keeps its height so the layout doesn't jump when it changes.
+        self.clipboard_status = QLabel("", objectName="secondary")
+        self.clipboard_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.clipboard_status.setStyleSheet("font-size: 12px;")
+        self.clipboard_status.setFixedHeight(self.clipboard_status.sizeHint().height() + 4)
 
         # --- Length row: "Length" [slider] 16 -----------------------------
         self.length_slider = QSlider(Qt.Orientation.Horizontal)
@@ -98,7 +110,7 @@ class MainWindow(QWidget):
         root.setSpacing(18)
         root.addWidget(card)
         root.addWidget(self.copy_button)
-        root.addSpacing(6)
+        root.addWidget(self.clipboard_status)
         root.addLayout(length_row)
         root.addLayout(chars_row)
 
@@ -109,6 +121,8 @@ class MainWindow(QWidget):
         self.length_slider.valueChanged.connect(self._on_length_changed)
         for box in self.checkboxes:
             box.toggled.connect(self._on_checkbox_toggled)
+        self.clipboard_guard.tick.connect(self._on_clipboard_tick)
+        self.clipboard_guard.cleared.connect(self._on_clipboard_cleared)
 
     # ------------------------------------------------------------- Actions
     def current_options(self) -> Options:
@@ -134,9 +148,26 @@ class MainWindow(QWidget):
         )
 
     def copy_to_clipboard(self) -> None:
-        QGuiApplication.clipboard().setText(self.password_field.text())
+        self.clipboard_guard.copy(self.password_field.text())
         self.copy_button.setText("Copied ✓")
         QTimer.singleShot(COPIED_FEEDBACK_MS, lambda: self.copy_button.setText("Copy"))
+
+    def _on_clipboard_tick(self, seconds_left: int) -> None:
+        self.clipboard_status.setText(f"Clipboard clears in {seconds_left} s")
+
+    def _on_clipboard_cleared(self) -> None:
+        self.clipboard_status.setText("Clipboard cleared")
+        QTimer.singleShot(CLEARED_MESSAGE_MS, self._hide_cleared_message)
+
+    def _hide_cleared_message(self) -> None:
+        # Don't erase a new countdown if the user copied again in the meantime.
+        if self.clipboard_guard.remaining == 0:
+            self.clipboard_status.setText("")
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Called by Qt when the window is closing: don't leave the password behind."""
+        self.clipboard_guard.clear_now()
+        super().closeEvent(event)
 
     def _on_length_changed(self, value: int) -> None:
         self.length_value.setText(str(value))
